@@ -137,56 +137,49 @@ function App() {
         {
             command: ["yes", "no", "是", "否"],
             callback: ({ command }) => {
+                console.log("topic number ===>> " + topicNumber);
                 if (command === "yes") {
-                    getTopicNumber(topicNumber, [
+                    if (topicNumber <= 3) {
                         say(
                             "Great, it looks like you have good conversation. Science shows that every great love story is a never-ending conversation! Next, I will keep asking you both more fun and interesting questions. waiting for you talking together, Be You, Be Happy!"
-                        ),
-                        say(
-                            "Great, it looks like you have good conversation. Science shows that every great love story is a never-ending conversation! Next, I will keep asking you both more fun and interesting questions. waiting for you talking together, Be You, Be Happy!"
-                        ),
+                        );
+                    } else {
                         say(
                             "Congratulations, you find your love successfully. Please check your dating prediction report in your Email! Today, all of questions has helped you know each other in the first impression. Science shows that every great love story is a never-ending conversation!  I have more dating coaching service to help you fall in love scientifically.  Waiting for you talking together and find your true love! Be You, Be Happy!"
-                        ),
-                    ]);
+                        );
+                    }
                 } else if (command === "是") {
                     // ? bot detects "yes" in chinese langue
-                    getTopicNumber(topicNumber, [
+                    if (topicNumber <= 3) {
                         say(
                             "非常棒，看起来你们很聊的来喔，科学表明，真爱就是一辈子都有聊不完的话题喔！接下来我会继续问你们，更多好玩有趣的问题，等着你们一起来聊，做最好的自己，一起必悦喔！"
-                        ),
-                        say(
-                            "非常棒，看起来你们很聊的来喔，科学表明，真爱就是一辈子都有聊不完的话题喔！接下来我会继续问你们，更多好玩有趣的问题，等着你们一起来聊，做最好的自己，一起必悦喔！"
-                        ),
+                        );
+                    } else {
                         say(
                             "恭喜你们，牵手成功!稍后你会在邮箱里收到你们的约会预测报告！今天的问题让你们彼此有了初步的了解，真爱需要科学经营，我还有更多的约会教练服务，帮助你们科学相爱，等着你们一起来聊，找到属于自己的真爱喔！做最好的自己，一起必悦喔！"
-                        ),
-                    ]);
+                        );
+                    }
                 } else if (command === "否") {
                     // ? bot detects "no" in chinese langue
-                    getTopicNumber(topicNumber, [
+                    if (topicNumber <= 3) {
                         say(
                             "不要难过，相爱是荷尔蒙的高度选择，这个世界总有一个属于你的真爱，在不远的地方等着你，我会继续帮助你们，科学找寻真爱喔！做最好的自己，一起必悦喔"
-                        ),
-                        say(
-                            "不要难过，相爱是荷尔蒙的高度选择，这个世界总有一个属于你的真爱，在不远的地方等着你，我会继续帮助你们，科学找寻真爱喔！做最好的自己，一起必悦喔"
-                        ),
+                        );
+                    } else {
                         say(
                             "不要难过，相爱是荷尔蒙的高度选择，这个世界总有一个属于你的真爱，在不远的地方等着你. 稍后你会在邮箱里收到你们的约会预测报告. 我会继续帮助你们，科学找寻真爱喔！做最好的自己，一起必悦喔！"
-                        ),
-                    ]);
+                        );
+                    }
                 } else {
-                    getTopicNumber(topicNumber, [
+                    if (topicNumber <= 3) {
                         say(
                             "Don't be sad, love is a high choice of hormones. You deserve for true love, who is waiting for you in this world.  I will continue to help you to find your true love scientifically! Be You, Be Happy!"
-                        ),
-                        say(
-                            "Don't be sad, love is a high choice of hormones. You deserve for true love, who is waiting for you in this world.  I will continue to help you to find your true love scientifically! Be You, Be Happy!"
-                        ),
+                        );
+                    } else {
                         say(
                             "Don't be sad, love is a high choice of hormones. You deserve for true love, who is waiting for you in this world.  Please check your dating prediction report in your Email .I will continue to help you to find your true love scientifically! Be You, Be Happy!"
-                        ),
-                    ]);
+                        );
+                    }
                 }
             },
         },
