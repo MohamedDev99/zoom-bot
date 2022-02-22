@@ -88,6 +88,15 @@ const chineseQuestionsTopic3 = [
     "在做最后的约会选择之前，你最后想要问你的约会对象",
 ];
 
+const questions = [
+    englishQuestionsTopic1,
+    englishQuestionsTopic2,
+    englishQuestionsTopic3,
+    chineseQuestionsTopic1,
+    chineseQuestionsTopic2,
+    chineseQuestionsTopic3,
+];
+
 export {
     englishQuestionsTopic1,
     englishQuestionsTopic2,
@@ -96,3 +105,5 @@ export {
     chineseQuestionsTopic2,
     chineseQuestionsTopic3,
 };
+
+export default questions;

@@ -32,3 +32,35 @@ code {
     background-size: cover;
     z-index: 1;
 }
+
+.videoLayout {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+video {
+    object-fit: cover;
+}
+
+.card {
+    position: absolute;
+    bottom: 2rem;
+    border-radius: 13px;
+    padding: 0.6rem 1rem;
+    margin: 0 15px;
+}
+
+.card p {
+    font-weight: bold;
+}
+
+.isBotSpeaking {
+    background-color: aquamarine;
+}
+
+.isBotNotSpeaking {
+    background-color: yellow;
+}
