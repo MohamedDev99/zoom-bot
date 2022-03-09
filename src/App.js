@@ -1,8 +1,8 @@
 import { useEffect, useState, useContext } from "react";
-import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
-import useSpeechSynthesis from "./hooks/useSpeechSynthesis";
+import { useSpeechRecognition } from "react-speech-recognition";
+// import useSpeechSynthesis from "./hooks/useSpeechSynthesis";
 import questionsData from "./data/testData";
-import MeetingCard from "./components/MeetingCard";
+// import MeetingCard from "./components/MeetingCard";
 import axios from "axios";
 import ReactPlayer from "react-player";
 import { SocketContext } from "./hooks/Context";
@@ -29,7 +29,7 @@ function App() {
     };
 
     // *  a hook to controll speech synthesis API
-    const { speak, isBotSpeaking } = useSpeechSynthesis();
+    // const { speak, isBotSpeaking } = useSpeechSynthesis();
 
     // ! function for change color of console log in the browser
     const consoleLogColor = (msg, color) =>
@@ -40,7 +40,7 @@ function App() {
     const [beHappy, setBeHappy] = useState(true);
     const [language, setLanguage] = useState("CN");
     const [botStarting, setBotStarting] = useState(false);
-    const [botSays, setBotSays] = useState("");
+    // const [botSays, setBotSays] = useState("");
 
     // * controll the topics
     const [topicNumber, setTopicNumber] = useState(1);
@@ -250,7 +250,7 @@ function App() {
     ];
 
     // * get speechRecognition variables
-    const { transcript, finalTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition({
+    const { transcript, browserSupportsSpeechRecognition } = useSpeechRecognition({
         commands: botStarting // ! detects if the bot is ON or OFF
             ? language === "CN" // ! detects language
                 ? chineseCommands
@@ -273,9 +273,9 @@ function App() {
     }
 
     // ! print any statement in the console
-    // useEffect(() => console.log(transcript), [transcript]);
+    useEffect(() => console.log(transcript), [transcript]);
 
-    const [fileUploadData, setFileUploadData] = useState(null);
+    // const [fileUploadData, setFileUploadData] = useState(null);
 
     const upload = async () => {
         console.log(fileUploadData);
@@ -292,8 +292,7 @@ function App() {
         console.log(uploaded);
     };
 
-    const { name, callAccepted, myVideo, userVideo, callEnded, stream, call } =
-        useContext(SocketContext);
+    const { myVideo } = useContext(SocketContext);
 
     return (
         <div className="videoLayout">
