@@ -1,24 +1,6 @@
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-        "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    height: 100vh;
-    width: 100%;
-}
-
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
-}
-
-*,
-*:before,
-*:after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 .pics {
     position: absolute;
@@ -39,10 +21,12 @@ code {
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: blue;
 }
 
 video {
     object-fit: cover;
+    border-radius: 20px;
 }
 
 .card {
@@ -63,4 +47,22 @@ video {
 
 .isBotNotSpeaking {
     background-color: yellow;
+}
+
+.layout {
+    width: 300px;
+    height: 200px;
+    padding: 0.5rem;
+    border-radius: 20px;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+}
+
+.isSpeaking {
+    background-color: orange;
 }

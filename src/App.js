@@ -1,10 +1,33 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
-import ReactPlayer from "react-player";
 import useSpeechSynthesis from "./hooks/useSpeechSynthesis";
 import questionsData from "./data/testData";
+import MeetingCard from "./components/MeetingCard";
+import axios from "axios";
+import ReactPlayer from "react-player";
+import { SocketContext } from "./hooks/Context";
 
 function App() {
+    // ? this function call amazon Polly api to get audio back
+    const say = async (message, voice) => {
+        const data = await axios
+            .post("http://localhost:5500/speech", {
+                text: message,
+                voiceId: voice,
+            })
+            .then((res) => res)
+            .catch((err) => console.log(err));
+        console.log(data);
+        const audioStream = data.data.AudioStream.data;
+        const uInt8Array = new Uint8Array(audioStream);
+        const arrayBuffer = uInt8Array.buffer;
+        const blob = new Blob([arrayBuffer]);
+        const url = URL.createObjectURL(blob);
+
+        const audio = new Audio(url);
+        audio.play();
+    };
+
     // *  a hook to controll speech synthesis API
     const { speak, isBotSpeaking } = useSpeechSynthesis();
 
@@ -22,7 +45,7 @@ function App() {
     // * controll the topics
     const [topicNumber, setTopicNumber] = useState(1);
     const topicController = () => {
-        consoleLogColor("topic number ===>> " + topicNumber, "red");
+        consoleLogColor("topic number =====>> " + topicNumber, "red");
         setQuestionNumber(0);
         if (topicNumber <= 3) {
             setTopicNumber((topicNumber) => topicNumber + 1);
@@ -38,12 +61,14 @@ function App() {
             if (beHappy) {
                 // * choosing "be happy" at the first time
                 consoleLogColor(questionNumber + " ===>> " + questions[questionNumber], "yellow");
-                speak(startingWord + " ." + questions[questionNumber], language && 19);
+                // speak(startingWord + " ." + questions[questionNumber], language && 21);
+                say(startingWord + " ." + questions[questionNumber], "Amy");
                 setBeHappy(false);
                 setQuestionNumber((questionNumber) => questionNumber + 1);
             } else {
                 consoleLogColor(questionNumber + " ===>> " + questions[questionNumber], "yellow");
-                speak(questions[questionNumber], language && 19);
+                say(questions[questionNumber], "Amy");
+                // speak(questions[questionNumber], language && 21);
                 setQuestionNumber((questionNumber) => questionNumber + 1);
             }
         } else {
@@ -90,17 +115,15 @@ function App() {
                     setBotSays("you selected the chinese path");
 
                     speak(
-                        `您好，我是你专属的人工智能爱情教练 小悦
+                        `您好. 我是你专属的人工智能爱情教练 小悦
                     接下来，我将陪伴你一起约会，不要紧张喔
-                     放松深呼吸，我会问你们俩很多有趣的问题
+                     放松深呼吸. 我会问你们俩很多有趣的问题
                      你们轮流回答就好了
-                    记得说话的时候，要看着彼此的眼睛
-                    因为眼睛是心灵的窗
-                    当你们俩都回答完，请对我说 “小悦” 您好，我是你专属的人工智能爱情教练, 小悦 接下来，我将陪伴你一起约会，不要紧张喔, 放松深呼吸
-                    我会问你们俩很多有趣的问题,你们轮流回答就好了, 记得说话的时候，要看着彼此的眼睛 因为眼睛是心灵的窗口
-                    当你们俩都回答完，请对我说 “小悦”.
+                    记得说话的时候. 要看着彼此的眼睛
+                    因为眼睛是心灵的窗口
+                    当你们俩都回答完. 请对我说 “小悦” 
                         `,
-                        19
+                        21
                     );
                 }
             },
@@ -169,7 +192,7 @@ function App() {
     // * Chinese Progress
     const chineseCommands = [
         {
-            command: "谢谢", // ! Be Happy Command in Chinese language
+            command: ["be happy"], // ! Be Happy Command in Chinese language
             callback: ({ command }) => {
                 consoleLogColor(command + " command >>>", "#00D024"); // ?
                 consoleLogColor("topic number ===>> " + topicNumber, "#99dde7"); // ? number of topic
@@ -237,11 +260,12 @@ function App() {
 
     useEffect(() => {
         // ! if the bot is Speaking the browser will stop listening
-        const unsubscribe = isBotSpeaking
-            ? SpeechRecognition.stopListening()
-            : SpeechRecognition.startListening({ language: language === "CN" ? "zh-CN" : "en-US" });
-        return unsubscribe;
-    });
+        // const unsubscribe = isBotSpeaking
+        //     ? SpeechRecognition.stopListening()
+        //     : SpeechRecognition.startListening({ language: language === "CN" ? "zh-CN" : "en-US" });
+        // return unsubscribe;
+        // say("Hi! My name is Amy. I will read any text you type here.", "Amy");
+    }, []);
 
     // *  check if browser supports or not
     if (!browserSupportsSpeechRecognition) {
@@ -250,24 +274,65 @@ function App() {
 
     // ! print any statement in the console
     // useEffect(() => console.log(transcript), [transcript]);
-    const playerRef = useRef();
+
+    const [fileUploadData, setFileUploadData] = useState(null);
+
+    const upload = async () => {
+        console.log(fileUploadData);
+        const formData = new FormData();
+        formData.append("uploadFile", fileUploadData.file);
+        formData.append("bucketName", fileUploadData.bucketName);
+        formData.append("fileName", fileUploadData.fileName);
+        console.log(formData);
+        const uploaded = await axios.post("http://localhost:5500/upload", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        console.log(uploaded);
+    };
+
+    const { name, callAccepted, myVideo, userVideo, callEnded, stream, call } =
+        useContext(SocketContext);
 
     return (
         <div className="videoLayout">
+            <ReactPlayer url={myVideo} playing={true} />
+
+            <video src={myVideo}></video>
+            {/* <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "7rem",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}>
+                <div style={{ display: "flex", gap: "5rem", alignItems: "center" }}>
+                    <MeetingCard
+                        img="https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg"
+                        speaking={!isBotSpeaking}
+                    />
+                    <MeetingCard
+                        img="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg"
+                        speaking={!isBotSpeaking}
+                    />
+                </div>
+                {/* <MeetingCard speaking={isBotSpeaking} /> *
+            </div> */}
+
             {/* <img className="pics" src="/img/2.jpg" alt="" /> */}
-            <ReactPlayer
+            {/* <ReactPlayer
                 height="100%"
                 width="100%"
-                url="./video/botVideo.mp4"
-                playing={isBotSpeaking ? true : false}
-                muted={true}
-                ref={playerRef}
-            />
-            {transcript && (
+                url="https://drive.google.com/file/d/1eCwmaNXpclg_SS7RPzzn_5tfv47o-de2//preview"
+                playing={true}
+            /> */}
+            {/* {transcript && (
                 <div className={`card ${isBotSpeaking ? "isBotSpeaking" : "isBotNotSpeaking"}`}>
-                    <p>{isBotSpeaking ? "bot says : " + botSays : "you say : " + transcript}</p>
+                    <p>{isBotSpeaking ? "bot says ::  " + botSays : "you say ::  " + transcript}</p>
                 </div>
-            )}
+            )} */}
         </div>
     );
 }
