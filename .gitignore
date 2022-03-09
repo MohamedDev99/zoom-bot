@@ -14,6 +14,8 @@
 #folders
 /zoom-bot-server
 /Socket-server
+/public/img
+/public/video
 
 # misc
 .DS_Store
