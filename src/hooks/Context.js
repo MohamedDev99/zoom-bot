@@ -1,19 +1,22 @@
-import React, { createContext, useState, useRef, useEffect } from "react";
+import { createContext, useState, useRef, useEffect } from "react";
 import { io } from "socket.io-client";
 import Peer from "simple-peer";
 
 const SocketContext = createContext();
 
 // const socket = io("http://localhost:5000");
-const socket = io("socket-server-ss.vercel.app");
+const socket = io("https://socket-server-ss.vercel.app/");
 
 const ContextProvider = ({ children }) => {
+    const isAdmin = window.location.hash === "#init" ? true : false;
+
     const [callAccepted, setCallAccepted] = useState(false);
     const [callEnded, setCallEnded] = useState(false);
     const [stream, setStream] = useState();
     const [name, setName] = useState("");
     const [call, setCall] = useState({});
     const [me, setMe] = useState("");
+    const [isEnabled, setIsEnabled] = useState({ video: true, audio: true });
 
     const myVideo = useRef();
     const userVideo = useRef();
@@ -26,7 +29,12 @@ const ContextProvider = ({ children }) => {
             console.log(myVideo);
         });
 
-        socket.on("me", (id) => setMe(id));
+        if (isAdmin) {
+            socket.on("me", (id) => {
+                setMe(id);
+                console.log("isConnected ..." + id);
+            });
+        }
 
         socket.on("callUser", ({ from, name: callerName, signal }) => {
             setCall({ isReceivingCall: true, from, name: callerName, signal });
@@ -80,20 +88,32 @@ const ContextProvider = ({ children }) => {
     };
 
     const playStop = () => {
-        let enabled = myVideo.getVideoTracks()[0].enabled;
+        let enabled = myVideo.current.srcObject.getVideoTracks()[0].enabled;
         if (enabled) {
-            myVideo.getVideoTracks()[0].enabled = false;
+            myVideo.current.srcObject.getVideoTracks()[0].enabled = false;
+            setIsEnabled((pre) => {
+                return { ...pre, video: false };
+            });
         } else {
-            myVideo.getVideoTracks()[0].enabled = true;
+            myVideo.current.srcObject.getVideoTracks()[0].enabled = true;
+            setIsEnabled((pre) => {
+                return { ...pre, video: true };
+            });
         }
     };
 
     const muteUnmute = () => {
-        const enabled = myVideo.getAudioTracks()[0].enabled;
+        const enabled = myVideo.current.srcObject.getAudioTracks()[0].enabled;
         if (enabled) {
-            myVideo.getAudioTracks()[0].enabled = false;
+            myVideo.current.srcObject.getAudioTracks()[0].enabled = false;
+            setIsEnabled((pre) => {
+                return { ...pre, audio: false };
+            });
         } else {
-            myVideo.getAudioTracks()[0].enabled = true;
+            myVideo.current.srcObject.getAudioTracks()[0].enabled = true;
+            setIsEnabled((pre) => {
+                return { ...pre, audio: true };
+            });
         }
     };
 
@@ -114,6 +134,7 @@ const ContextProvider = ({ children }) => {
                 answerCall,
                 playStop,
                 muteUnmute,
+                isEnabled,
             }}>
             {children}
         </SocketContext.Provider>

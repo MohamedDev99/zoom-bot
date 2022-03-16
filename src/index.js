@@ -3,13 +3,34 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { ContextProvider } from "./hooks/Context";
+// import { ContextProvider } from "./hooks/Context";
+import { BrowserRouter as Router, Navigate, Outlet, Route, Routes } from "react-router-dom";
+import { v4 as uuid } from "uuid";
+import { lightTheme, MeetingProvider } from "amazon-chime-sdk-component-library-react";
+import { ThemeProvider } from "styled-components";
+import { ConsoleLogger, LogLevel, VideoPriorityBasedPolicy } from "amazon-chime-sdk-js";
+import MeetingId from "./components/meetingId";
+
+const logger = new ConsoleLogger("SDK", LogLevel.INFO);
+const videoDownlinkBandwidthPolicy = new VideoPriorityBasedPolicy(logger);
+
+const meetingConfig = {
+    logger,
+    videoDownlinkBandwidthPolicy,
+};
 
 ReactDOM.render(
     <React.StrictMode>
-        <ContextProvider>
-            <App />
-        </ContextProvider>
+        <Router>
+            <ThemeProvider theme={lightTheme}>
+                <MeetingProvider {...meetingConfig}>
+                    <Routes>
+                        <Route path="/" element={<App />} />
+                        <Route path="/:id" element={<MeetingId />} />
+                    </Routes>
+                </MeetingProvider>
+            </ThemeProvider>
+        </Router>
     </React.StrictMode>,
     document.getElementById("root")
 );
