@@ -10,6 +10,7 @@ import { lightTheme, MeetingProvider } from "amazon-chime-sdk-component-library-
 import { ThemeProvider } from "styled-components";
 import { ConsoleLogger, LogLevel, VideoPriorityBasedPolicy } from "amazon-chime-sdk-js";
 import MeetingId from "./components/meetingId";
+import { RecoilRoot } from "recoil";
 
 const logger = new ConsoleLogger("SDK", LogLevel.INFO);
 const videoDownlinkBandwidthPolicy = new VideoPriorityBasedPolicy(logger);
@@ -24,10 +25,12 @@ ReactDOM.render(
         <Router>
             <ThemeProvider theme={lightTheme}>
                 <MeetingProvider {...meetingConfig}>
-                    <Routes>
-                        <Route path="/" element={<App />} />
-                        <Route path="/:id" element={<MeetingId />} />
-                    </Routes>
+                    <RecoilRoot>
+                        <Routes>
+                            <Route path="/" element={<App />} />
+                            <Route path="/:id" element={<MeetingId />} />
+                        </Routes>
+                    </RecoilRoot>
                 </MeetingProvider>
             </ThemeProvider>
         </Router>

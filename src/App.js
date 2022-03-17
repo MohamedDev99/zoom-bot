@@ -1,8 +1,10 @@
 import { useMeetingManager } from "amazon-chime-sdk-component-library-react";
 import axios from "axios";
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSpeechRecognition } from "react-speech-recognition";
+import { useRecoilState } from "recoil";
+import { meetingInfo } from "./atom/meetingAtom";
 import AudioRecorder from "./components/AudioRec";
 // import MeetingCard from "./components/MeetingCard";
 // import ReactPlayer from "react-player";
@@ -47,20 +49,24 @@ function App() {
     // const upload = async () => {
     //     console.log(fileUploadData);
     //     const formData = new FormData();
+    //     formData.append("bucketName", "behappy-chinese-video-question");
+    //     // formData.append("fileName", "my first video");
     //     formData.append("uploadFile", fileUploadData.file);
-    //     formData.append("bucketName", fileUploadData.bucketName);
-    //     formData.append("fileName", fileUploadData.fileName);
     //     console.log(formData);
-    //     const uploaded = await axios.post("http://localhost:5500/upload", formData, {
-    //         headers: {
-    //             "Content-Type": "multipart/form-data",
-    //         },
-    //     });
+    //     const uploaded = await axios
+    //         .post("http://localhost:5500/upload", formData, {
+    //             headers: {
+    //                 "Content-Type": "multipart/form-data",
+    //             },
+    //         })
+    //         .then((res) => res.json())
+    //         .catch((err) => err.message);
     //     console.log(uploaded);
     // };
 
     const meetingManager = useMeetingManager();
     const navigate = useNavigate();
+    const [meetingInfoData, setMeetingInfoData] = useRecoilState(meetingInfo);
 
     useEffect(() => {
         const joinMeeting = async () => {
@@ -73,8 +79,8 @@ function App() {
 
             console.log(response);
             const joinData = {
-                meetingInfo: response?.meetingResponse.Meeting,
-                attendeeInfo: response?.attendee.Attendee,
+                meetingInfo: response?.meetingResponse?.Meeting,
+                attendeeInfo: response?.attendee?.Attendee,
                 // SDK doesn't choose any device
                 deviceLabels: async () => {
                     // Do something
@@ -86,9 +92,10 @@ function App() {
                     return stream;
                 },
             };
+            setMeetingInfoData(joinData);
 
             // Use the join API to create a meeting session using the above data
-            await meetingManager.join(joinData);
+            // await meetingManager.join(joinData);
             navigate(`/${response?.meetingResponse.Meeting.MeetingId}`);
             // Skip devices setup
 
@@ -103,6 +110,14 @@ function App() {
             <div className="flex flex-col gap-y-8">
                 {/* <button onClick={joinMeeting}>Join</button> */}
             </div>
+            {/* <input
+                    type="file"
+                    onChange={(f) => {
+                        console.log(f.target.files[0]);
+                        setFileUploadData({ file: f.target.files[0] });
+                    }}
+                />
+                <button onClick={upload}>upload</button> */}
             {/* <div
                 style={{
                     display: "flex",

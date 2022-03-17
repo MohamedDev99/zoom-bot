@@ -17,7 +17,7 @@ const chime = new AWS.Chime({
 chime.endpoint = new AWS.Endpoint("https://service.chime.aws.amazon.com/console");
 
 // AWS.config.getCredentials((err) => {
-//     console.log("Region: ", AWS.config);
+//     console.log("Region: ", AWS.config.credentials);
 //     if (err) console.log(err.stack);
 //     // credentials not loaded
 //     else {
@@ -43,7 +43,7 @@ app.get("/meeting", async (req, res) => {
             })
             .promise();
     } catch (err) {
-        console.log(err);
+        console.log(err.message);
         return res.send(err);
     }
     console.log(" new meeting created  :::: ", response);
