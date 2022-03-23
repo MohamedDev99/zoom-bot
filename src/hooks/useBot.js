@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { useSpeechSynthesis } from "react-speech-kit";
+import useSpeechSynthesis from "./useSpeechSynthesis";
 import questionsData from "../data/testData";
 
 export default function useBot() {
@@ -36,7 +36,7 @@ export default function useBot() {
     const [beHappy, setBeHappy] = useState(true);
     const [language, setLanguage] = useState("CN");
     const [botStarting, setBotStarting] = useState(false);
-    const [botSays, setBotSays] = useState("");
+    const [_botSays, setBotSays] = useState("");
 
     // * controll the topics
     const [topicNumber, setTopicNumber] = useState(1);
@@ -57,14 +57,14 @@ export default function useBot() {
             if (beHappy) {
                 // * choosing "be happy" at the first time
                 consoleLogColor(questionNumber + " ===>> " + questions[questionNumber], "yellow");
-                // speak(startingWord + " ." + questions[questionNumber], language && 21);
-                say(startingWord + " ." + questions[questionNumber], "Amy");
+                speak(startingWord + " ." + questions[questionNumber], language && 21);
+                // say(startingWord + " ." + questions[questionNumber], "Amy");
                 setBeHappy(false);
                 setQuestionNumber((questionNumber) => questionNumber + 1);
             } else {
                 consoleLogColor(questionNumber + " ===>> " + questions[questionNumber], "yellow");
-                say(questions[questionNumber], "Amy");
-                // speak(questions[questionNumber], language && 21);
+                // say(questions[questionNumber], "Amy");
+                speak(questions[questionNumber], language && 21);
                 setQuestionNumber((questionNumber) => questionNumber + 1);
             }
         } else {

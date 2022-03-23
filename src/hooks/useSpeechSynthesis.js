@@ -47,7 +47,7 @@ const useSpeechSynthesis = (props = {}) => {
         window.speechSynthesis.cancel();
         utterance.text = txt;
         utterance.voice = window.speechSynthesis.getVoices()[voice ? voice : 5];
-        // console.log("Voice : " + window.speechSynthesis.getVoices()[voice ? voice : 4].name);
+        console.log("Voice : " + window.speechSynthesis.getVoices()[voice ? voice : 4].name);
         utterance.rate = 0.9;
         utterance.pitch = 1;
         utterance.volume = 1;

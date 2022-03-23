@@ -2,11 +2,11 @@ import { useMeetingManager } from "amazon-chime-sdk-component-library-react";
 import axios from "axios";
 import { useEffect, useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSpeechRecognition } from "react-speech-recognition";
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import { useRecoilState } from "recoil";
 import { meetingInfo } from "./atom/meetingAtom";
 import AudioRecorder from "./components/AudioRec";
-// import MeetingCard from "./components/MeetingCard";
+import MeetingCard from "./components/MeetingCard";
 // import ReactPlayer from "react-player";
 // import { SocketContext } from "./hooks/Context";
 import useBot from "./hooks/useBot";
@@ -17,7 +17,14 @@ function App() {
         console.log("%c" + msg, "color:" + color + ";font-weight:bold;");
 
     // * useBot hook
-    const { startingCommands, englishCommands, chineseCommands, language, botStarting } = useBot();
+    const {
+        isBotSpeaking,
+        startingCommands,
+        englishCommands,
+        chineseCommands,
+        language,
+        botStarting,
+    } = useBot();
     // * get speechRecognition variables
     const { transcript, browserSupportsSpeechRecognition } = useSpeechRecognition({
         commands: botStarting // ! detects if the bot is ON or OFF
@@ -29,12 +36,14 @@ function App() {
 
     useEffect(() => {
         // ! if the bot is Speaking the browser will stop listening
-        // const unsubscribe = isBotSpeaking
-        //     ? SpeechRecognition.stopListening()
-        //     : SpeechRecognition.startListening({ language: language === "CN" ? "zh-CN" : "en-US" });
-        // return unsubscribe;
+        console.log(isBotSpeaking);
+
+        isBotSpeaking
+            ? SpeechRecognition.stopListening()
+            : SpeechRecognition.startListening({ language: language === "CN" ? "zh-CN" : "en-US" });
+
         // say("Hi! My name is Amy. I will read any text you type here.", "Amy");
-    }, []);
+    });
 
     // *  check if browser supports or not
     if (!browserSupportsSpeechRecognition) {
@@ -42,7 +51,7 @@ function App() {
     }
 
     // ! print any statement in the console
-    // useEffect(() => console.log(transcript), [transcript]);
+    useEffect(() => console.log(transcript), [transcript]);
 
     // const [fileUploadData, setFileUploadData] = useState(null);
 
@@ -64,46 +73,46 @@ function App() {
     //     console.log(uploaded);
     // };
 
-    const meetingManager = useMeetingManager();
-    const navigate = useNavigate();
-    const [meetingInfoData, setMeetingInfoData] = useRecoilState(meetingInfo);
+    // const meetingManager = useMeetingManager();
+    // const navigate = useNavigate();
+    // const [meetingInfoData, setMeetingInfoData] = useRecoilState(meetingInfo);
 
-    useEffect(() => {
-        const joinMeeting = async () => {
-            console.log("start meeting");
-            // Fetch the meeting and attendee data from your server application
-            const response = await axios
-                .get("http://localhost:5000/meeting")
-                .then((res) => res.data)
-                .catch((err) => console.log(err.message));
+    // useEffect(() => {
+    //     const joinMeeting = async () => {
+    //         console.log("start meeting");
+    //         // Fetch the meeting and attendee data from your server application
+    //         const response = await axios
+    //             .get("http://localhost:5000/meeting")
+    //             .then((res) => res.data)
+    //             .catch((err) => console.log(err.message));
 
-            console.log(response);
-            const joinData = {
-                meetingInfo: response?.meetingResponse?.Meeting,
-                attendeeInfo: response?.attendee?.Attendee,
-                // SDK doesn't choose any device
-                deviceLabels: async () => {
-                    // Do something
-                    const stream = await navigator.mediaDevices.getUserMedia({
-                        video: true,
-                        audio: true,
-                    });
-                    // Do something
-                    return stream;
-                },
-            };
-            setMeetingInfoData(joinData);
+    //         console.log(response);
+    //         const joinData = {
+    //             meetingInfo: response?.meetingResponse?.Meeting,
+    //             attendeeInfo: response?.attendee?.Attendee,
+    //             // SDK doesn't choose any device
+    //             deviceLabels: async () => {
+    //                 // Do something
+    //                 const stream = await navigator.mediaDevices.getUserMedia({
+    //                     video: true,
+    //                     audio: true,
+    //                 });
+    //                 // Do something
+    //                 return stream;
+    //             },
+    //         };
+    //         setMeetingInfoData(joinData);
 
-            // Use the join API to create a meeting session using the above data
-            // await meetingManager.join(joinData);
-            navigate(`/${response?.meetingResponse.Meeting.MeetingId}`);
-            // Skip devices setup
+    //         // Use the join API to create a meeting session using the above data
+    //         // await meetingManager.join(joinData);
+    //         navigate(`/${response?.meetingResponse.Meeting.MeetingId}`);
+    //         // Skip devices setup
 
-            // Start the session to join the meeting
-            // await meetingManager.start();
-        };
-        joinMeeting();
-    }, [navigate, meetingManager]);
+    //         // Start the session to join the meeting
+    //         // await meetingManager.start();
+    //     };
+    //     joinMeeting();
+    // }, [navigate, meetingManager]);
 
     return (
         <div className="videoLayout h-screen">
@@ -118,7 +127,7 @@ function App() {
                     }}
                 />
                 <button onClick={upload}>upload</button> */}
-            {/* <div
+            <div
                 style={{
                     display: "flex",
                     flexDirection: "column",
@@ -136,8 +145,8 @@ function App() {
                         speaking={!isBotSpeaking}
                     />
                 </div>
-                {/* <MeetingCard speaking={isBotSpeaking} /> *
-            </div> */}
+                <MeetingCard speaking={isBotSpeaking} />
+            </div>
 
             {/* <img className="pics" src="/img/2.jpg" alt="" /> */}
             {/* <ReactPlayer
